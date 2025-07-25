@@ -94,3 +94,15 @@ See docs/basic_usage.txt for extra tips and usage scenarios.
 ---
 
 Feel free to improve, adapt, or share your own Nmap scripts in this folder!
+
+
+---
+
+Tested successfully on:
+- Kali Linux (latest version, 32-bit and 64-bit)
+- Kali NetHunter (rooted Android)
+- Termux (with necessary packages installed)
+- Ubuntu Desktop 22.04
+
+No issues encountered.  
+If you run this on another platform and it works, feel free to open an issue or pull request to expand compatibility notes!
