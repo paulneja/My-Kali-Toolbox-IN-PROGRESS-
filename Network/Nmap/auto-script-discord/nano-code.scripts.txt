@@ -1,0 +1,51 @@
+Here is the nano code:
+
+#!/bin/bash
+
+WEBHOOK="https://canary.discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+if [ $# -eq 0 ]; then
+    echo "Uso: $0 [NMAP_OPTIONS] TARGET"
+    echo "Ejemplo: $0 -sV -Pn 192.168.1.1"
+    exit 1
+fi
+
+TARGET="${@: -1}"
+TMPFILE=$(mktemp)
+
+
+nmap -sV -sC "$@" > "$TMPFILE"
+
+OPEN_PORTS=$(grep -E "^[0-9]+/tcp\s+open" "$TMPFILE")
+
+if [ -z "$OPEN_PORTS" ]; then
+    MESSAGE=" No open ports found for $TARGET."
+else
+    MESSAGE=" **Open Ports:**\n$OPEN_PORTS"
+fi
+
+
+VULNS=$(nmap --script vuln "$TARGET" | grep -A 3 'VULNERABLE' | sed '/^|_/d')
+
+if [ -z "$VULNS" ]; then
+    VULNS=" No known exploits or vulnerabilities found."
+else
+    VULNS=" **Exploits/Vulnerabilities:**\n$VULNS"
+fi
+
+
+FINAL_MESSAGE=" **Scan results for $TARGET:**\n\n$MESSAGE\n\n$VULNS"
+
+
+PAYLOAD=$(jq -nc --arg content "$FINAL_MESSAGE" '{"content": $content}')
+
+
+curl -H "Content-Type: application/json" \
+     -X POST \
+     -d "$PAYLOAD" \
+     "$WEBHOOK"
+
+
+rm "$TMPFILE"
+
+echo "Scan and vulnerability report sent to Discord."
