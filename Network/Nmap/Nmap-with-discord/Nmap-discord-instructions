@@ -1,0 +1,96 @@
+Nmap Script/Automation
+
+
+---
+
+Main Script
+
+nmap-alert.sh
+
+Runs a customizable Nmap scan against any host or IP range.
+
+Filters and reports only open TCP ports.
+
+Evaluates the security risk of common ports (SSH, Telnet, FTP, HTTP, SMB, RDP, etc).
+
+Sends the results automatically to your selected Discord channel via webhook (change the WEBHOOK variable in the script).
+
+If no open ports are found, you’ll get a notification saying so.
+
+
+
+---
+
+How to Use
+
+1. Create the script file:
+
+Open a terminal and run:
+
+nano nmap-alert.sh
+
+Copy and paste the code provided in docs/nano_nmap_alert.txt into the nano editor, then save and exit.
+
+
+2. Edit the WEBHOOK variable in nmap-alert.sh to use your Discord webhook URL.
+
+
+3. Make the script executable:
+
+chmod +x nmap-alert.sh
+
+
+4. Run the script with any Nmap options and target:
+
+./nmap-alert.sh [NMAP_OPTIONS] [TARGET]
+
+Example:
+
+./nmap-alert.sh -sV -Pn 192.168.1.1
+
+
+
+
+---
+
+Example Output
+
+In Discord, you'll receive a message like:
+
+Open ports for -sV -Pn 192.168.1.1:
+22/tcp   open  ssh   (Medium - SSH)
+80/tcp   open  http  (Medium - HTTP)
+445/tcp  open  microsoft-ds (High - SMB)
+
+If there are no open ports:
+
+-sV -Pn 192.168.1.100: No open ports found
+
+
+---
+
+Notes
+
+You can use any valid Nmap parameters (-sV, -Pn, -p-, -A, etc).
+
+Works for any host, device, or IP range you can scan from your machine.
+
+Output is formatted for easy reading and quick risk analysis in Discord.
+
+
+
+---
+
+Documentation & Examples
+
+See examples/ for real output samples.
+
+See docs/nano_nmap_alert.txt for the script code to paste in nano.
+
+See docs/basic_usage.txt for extra tips and usage scenarios.
+
+
+
+---
+
+Feel free to improve, adapt, or share your own Nmap scripts in this folder!
