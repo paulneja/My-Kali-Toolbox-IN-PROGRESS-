@@ -1,0 +1,77 @@
+Nmap-Exploit Script Guide
+
+This guide explains how to set up and use the nmap-exploit.sh script on Kali Linux or Kali NetHunter. This script automates Nmap scanning, identifies open ports, checks for vulnerabilities, and reports the findings directly to Discord via a webhook.
+
+Step-by-Step Instructions
+
+Step 1: Install Dependencies
+
+First, ensure you have Nmap and jq installed:
+
+sudo apt update
+sudo apt install nmap jq -y
+
+Step 2: Create the Script File
+
+Open a terminal and create the script file:
+
+nano nmap-exploit.sh
+
+Copy and paste the script code provided into this file. Remember to replace the placeholder WEBHOOK variable with your Discord webhook URL.
+
+Step 3: Save and Exit
+
+Press CTRL + O to save, then ENTER, and CTRL + X to exit.
+
+Step 4: Make the Script Executable
+
+Run the following command:
+
+chmod +x nmap-exploit.sh
+
+Step 5: Execute the Script
+
+To run the script, use the following command syntax:
+
+./nmap-exploit.sh [Nmap Options] [Target IP or Hostname]
+
+For example:
+
+./nmap-exploit.sh -sV -Pn 192.168.1.1
+
+-sV: Detect service/version info.
+
+-Pn: Skip host discovery.
+
+
+What Does the Script Do?
+
+Performs an advanced Nmap scan on the provided target.
+
+Lists open ports and the detected services.
+
+Identifies known vulnerabilities (CVEs) associated with the detected services.
+
+Reports findings directly to your specified Discord channel via webhook.
+
+
+Script Usage Notes
+
+Customize the Nmap flags according to your needs (e.g., -A, -O).
+
+Ensure your Discord webhook URL is correct in the script (WEBHOOK variable).
+
+The script requires internet connectivity to send data to Discord.
+
+
+Tested Environments
+
+Successfully tested on:
+
+Kali Linux (latest version)
+
+Kali NetHunter (Android)
+
+
+This script provides a simple, automated method for scanning networks and checking for vulnerabilities with quick reporting directly to your Discord.
+author:paulneja
