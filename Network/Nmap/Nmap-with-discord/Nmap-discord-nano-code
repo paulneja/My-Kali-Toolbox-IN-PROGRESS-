@@ -1,0 +1,52 @@
+Here is the nano code:
+
+
+#!/bin/bash
+
+WEBHOOK="https://canary.discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+if [ $# -eq 0 ]; then
+    echo "Uso: $0 [OPCIONES_NMAP] objetivo"
+    echo "Ejemplo: $0 -sV -Pn 192.168.1.1"
+    exit 1
+fi
+
+TMPFILE=$(mktemp)
+nmap "$@" | grep -E "^[0-9]+/tcp\s+open" > "$TMPFILE"
+
+if [ ! -s "$TMPFILE" ]; then
+    curl -H "Content-Type: application/json" \
+         -X POST \
+         -d "{\"content\": \"\`\`\`$@: No open ports found\`\`\`\"}" \
+         "$WEBHOOK"
+    rm "$TMPFILE"
+    exit 0
+fi
+
+RISK=""
+while read line; do
+    PORT=$(echo $line | awk '{print $1}' | cut -d'/' -f1)
+    SERVICE=$(echo $line | awk '{print $3}')
+    RISK_LEVEL="(Low)"
+    [ "$PORT" == "21" ] && RISK_LEVEL="(High - FTP)"
+    [ "$PORT" == "22" ] && RISK_LEVEL="(Medium - SSH)"
+    [ "$PORT" == "23" ] && RISK_LEVEL="(Very High - Telnet)"
+    [ "$PORT" == "80" ] && RISK_LEVEL="(Medium - HTTP)"
+    [ "$PORT" == "443" ] && RISK_LEVEL="(Low - HTTPS)"
+    [ "$PORT" == "3306" ] && RISK_LEVEL="(High - MySQL)"
+    [ "$PORT" == "3389" ] && RISK_LEVEL="(Very High - RDP)"
+    [ "$PORT" == "445" ] && RISK_LEVEL="(High - SMB)"
+    [ "$PORT" == "5900" ] && RISK_LEVEL="(High - VNC)"
+    # IMPORTANTE: escapá la barra invertida y la n
+    RISK="${RISK}${line} $RISK_LEVEL\\n"
+done < "$TMPFILE"
+
+
+PAYLOAD="{\"content\": \"\`\`\`Open ports for $@:\\n$RISK\`\`\`\"}"
+
+curl -H "Content-Type: application/json" \
+     -X POST \
+     -d "$PAYLOAD" \
+     "$WEBHOOK"
+
+rm "$TMPFILE"
